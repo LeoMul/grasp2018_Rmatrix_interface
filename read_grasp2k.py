@@ -119,20 +119,20 @@ def average_occupation_numbers(rel_csfs):
 def print_out_orbitals(num_orbitals,nr_csfs,nr_peel,core_subshells):
 
     for ii in range(0,len(core_subshells)):
-        string = str(core_subshells[ii]).upper()+' '
+        string = ' '+str(core_subshells[ii]).upper()+' '
         angular_symbol = str(core_subshells[ii])[-1]
         index_of_angular_symbol = np.where(angular_symbols == angular_symbol)
         occupation = angular_core_occ[index_of_angular_symbol][0]
-        string += str(occupation)
+        string += '{:2}'.format(occupation)
         print(string)
 
 
     for ii in range(0,num_orbitals):
         orbital_occ = nr_csfs[:,ii]
 
-        string = str(nr_peel[ii]).upper()+' '
+        string = ' '+str(nr_peel[ii]).upper()+' '
         for jj in range(0,len(orbital_occ)):
-            string =string + str(int(orbital_occ[jj]))+' '
+            string =string + '{:2}'.format(int(orbital_occ[jj]))+' '
 
         print(string)
 

@@ -40,7 +40,7 @@ program read
 
     !subshell labels
     character*2 :: angular_symbols_neg(5) = (/'s ','p ','d ','f ','g ' /)
-    character*2 :: angular_symbols_pos(4) = (/'p-','d-','f-','g-' /)
+    character*2 :: angular_symbols_pos(4) =      (/'p-','d-','f-','g-' /)
 
     !main function
 
@@ -89,8 +89,10 @@ program read
         integer :: a,b 
         real*8 :: c
         
-        max_num_points = 0
+        real*8 :: t1,t2
 
+        max_num_points = 0
+        call cpu_time(t1)
         open(1,file = "rwfn.out",form='unformatted',status='old')
 
         !READ (1, iostat = iostat_store) 
@@ -126,9 +128,12 @@ program read
         write(*,1040) max_num_points
 
         close(1)
+        call cpu_time(t2)
+        write(*,1050) t2-t1
 
         1030 format(I6,1X,'relativistic orbials found. ')
         1040 format(I6,' is the max radial grid length.')
+        1050 format('Dimension find time: 'F12.6)
 
     end subroutine
 
@@ -143,7 +148,7 @@ program read
         integer :: iostat_store
 
         integer :: i
-        real*8 ::PZ
+        real*8 ::PZ,t2,t1
         
         inquire(file="rwfn.out",exist=rwfn_existence)
 
@@ -169,7 +174,7 @@ program read
         !intiialize at zero
         large_component = 0.0d0
         small_component = 0.0d0 
-
+        call cpu_time(t1)
         open(1,file = "rwfn.out",form='unformatted',status='old')
 
         READ (1) !read header
@@ -191,13 +196,17 @@ program read
                 !this logic just stops it running off the edge of either of the angular labels arrays
 
                 if     (kappa(iter_orbs) .ge. 0) then 
-                    angular_string(iter_orbs) = angular_symbols_pos(kappa(iter_orbs))
+
+                            angular_string(iter_orbs) = angular_symbols_pos(kappa(iter_orbs))
+                
                 elseif (kappa(iter_orbs) .le. 0) then
-                    angular_string(iter_orbs) = angular_symbols_neg(abs(kappa(iter_orbs)))
+
+                            angular_string(iter_orbs) = angular_symbols_neg(abs(kappa(iter_orbs)))
+                            
                 else   
-                    !in principal this should never be reached. only if kappa==0
-                    print*,'invalid kappa in orbital',iter_orbs
-                    stop 
+                            !in principal this should never be reached. only if kappa==0
+                            print*,'invalid kappa in orbital',iter_orbs
+                            stop 
                 end if 
             else
                 !in the event I didn't put enough into the angular labels, come here and just **.
@@ -207,7 +216,9 @@ program read
         END DO 
 
         close(1)
-
+        call cpu_time(t2)
+        write(*,1050) t2-t1
+        1050 format('Orbital read time: 'F12.6)
 
     end subroutine
 
@@ -290,8 +301,8 @@ program read
         
 
 
-        1020 format('   Subshell',1X,'Kappa',5X,'Eigenv(Ha)',2X,'NPoints',4X,'GenOcc')
-        1010 format(3X,3X,I3,A2,3X,I3,3X,ES12.6,4X,I5,F10.4)
+        1020 FORMAT ('   Subshell',1X,'Kappa',5X,'Eigenv(Ha)',2X,'NPoints',4X,'GenOcc')
+        1010 FORMAT (3X,3X,I3,A2,3X,I3,3X,ES12.6,4X,I5,F10.4)
 
     end subroutine
 
